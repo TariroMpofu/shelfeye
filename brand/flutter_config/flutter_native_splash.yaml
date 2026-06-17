@@ -1,0 +1,25 @@
+# =====================================================================
+#  PriceCheck — Native splash / launch screen
+#  Run:  dart run flutter_native_splash:create
+#  (add `flutter_native_splash` to dev_dependencies first)
+# =====================================================================
+flutter_native_splash:
+  # Light theme — paper background (matches AppTheme.paper)
+  color: "#FAF8F3"
+  image: "assets/brand/splash/splash_logo_light.png"
+
+  # Dark theme — deep ink background
+  color_dark: "#15211B"
+  image_dark: "assets/brand/splash/splash_logo_dark.png"
+
+  # Keep the mark a sensible size; the plugin centers it.
+  # android_gravity / ios_content_mode default to center — good for a kiosk.
+
+  android_12:
+    # Android 12+ uses its own splash API: a centered icon on a solid color.
+    color: "#FAF8F3"
+    image: "assets/brand/splash/splash_logo_light.png"
+    color_dark: "#15211B"
+    image_dark: "assets/brand/splash/splash_logo_dark.png"
+
+  fullscreen: true        # kiosk: hide status/nav bars during launch

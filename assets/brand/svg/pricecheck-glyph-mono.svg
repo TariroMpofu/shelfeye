@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="PriceCheck">
+  <defs>
+    <mask id="pcKnock">
+      <rect width="24" height="24" fill="#000"></rect>
+      <path d="M12.586 2.586 21 11a2 2 0 0 1 0 2.828l-7.172 7.172a2 2 0 0 1-2.828 0L2.586 12.586A2 2 0 0 1 2 11.172V4a2 2 0 0 1 2-2h7.172a2 2 0 0 1 1.414.586Z" fill="#fff"></path>
+      <circle cx="7.5" cy="7.5" r="1.7" fill="#000"></circle>
+      <path d="M10.4 13.6 12.7 15.9 17.2 11" fill="none" stroke="#000" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"></path>
+    </mask>
+  </defs>
+  <rect width="24" height="24" fill="currentColor" mask="url(#pcKnock)"></rect>
+</svg>

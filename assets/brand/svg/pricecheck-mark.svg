@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-label="PriceCheck">
+  <defs>
+    <linearGradient id="pcBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a9065"></stop>
+      <stop offset="1" stop-color="#176343"></stop>
+    </linearGradient>
+  </defs>
+  <rect width="96" height="96" rx="22" fill="url(#pcBg)"></rect>
+  <g transform="translate(20.4 20.4) scale(2.4)">
+    <path d="M12.586 2.586 21 11a2 2 0 0 1 0 2.828l-7.172 7.172a2 2 0 0 1-2.828 0L2.586 12.586A2 2 0 0 1 2 11.172V4a2 2 0 0 1 2-2h7.172a2 2 0 0 1 1.414.586Z" fill="#ffffff"></path>
+    <circle cx="7.5" cy="7.5" r="1.7" fill="#1c7a52"></circle>
+    <path d="M10.4 13.6 12.7 15.9 17.2 11" fill="none" stroke="#1c7a52" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"></path>
+  </g>
+</svg>

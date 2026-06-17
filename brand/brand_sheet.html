@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PriceCheck — Brand Asset Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root{--paper:#FAF8F3;--ink:#15211B;--em:#1f7a52;--line:#e7e3da;--muted:#8a8579;--font:'Schibsted Grotesk',system-ui,sans-serif;--mono:'IBM Plex Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:#efece4;color:#222018;-webkit-font-smoothing:antialiased;padding:clamp(24px,5vw,64px);}
+.wrap{max-width:1100px;margin:0 auto;}
+header{border-bottom:2px solid var(--ink);padding-bottom:24px;margin-bottom:40px;}
+.kick{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--em);margin-bottom:12px;}
+h1{font-size:clamp(32px,6vw,52px);font-weight:800;letter-spacing:-.035em;}
+.sub{color:var(--muted);margin-top:12px;font-size:18px;}
+.sec{margin-bottom:48px;}
+.sec-h{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;display:flex;align-items:center;gap:12px;}
+.sec-h::before{content:'';width:22px;height:2px;background:var(--em);}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:16px;box-shadow:0 1px 2px rgba(0,0,0,.03),0 16px 40px -30px rgba(0,0,0,.3);}
+.tile{width:160px;height:160px;border-radius:28px;display:grid;place-items:center;overflow:hidden;}
+.tile.paper{background:var(--paper);} .tile.dark{background:var(--ink);} .tile.checker{background:
+  conic-gradient(#e9e6df 0 25%,#f6f4ee 0 50%,#e9e6df 0 75%,#f6f4ee 0) 0/26px 26px;}
+.tile img{width:100%;height:100%;object-fit:contain;}
+.tile.sq img{border-radius:0;}
+.cap{font-size:14px;font-weight:600;text-align:center;}
+.cap span{display:block;font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400;margin-top:4px;letter-spacing:.02em;}
+.bar{display:flex;align-items:center;gap:14px;background:var(--paper);border:1.5px solid var(--line);border-radius:18px;padding:18px 22px;}
+.bar .logo{width:46px;height:46px;}
+.bar .word{font-size:22px;font-weight:700;letter-spacing:-.02em;}
+.swatches{display:flex;gap:14px;flex-wrap:wrap;}
+.sw{display:flex;flex-direction:column;gap:8px;}
+.sw .chip{width:120px;height:72px;border-radius:14px;border:1px solid rgba(0,0,0,.08);}
+.sw .lab{font-family:var(--mono);font-size:12px;color:var(--muted);}
+.sw .lab b{display:block;color:#222018;font-size:13px;}
+.note{font-size:14px;color:var(--muted);margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kick">Brand assets · ready for Flutter</div>
+    <h1>PriceCheck</h1>
+    <p class="sub">Price-tag-with-checkmark mark in the app's emerald. Drop-in icon, splash, in-app glyph and placeholder.</p>
+  </header>
+
+  <section class="sec">
+    <div class="sec-h">App launcher icon</div>
+    <div class="grid">
+      <div class="card"><div class="tile sq" style="border-radius:36px"><img src="appicon/appicon_master_1024.png" alt="" /></div><div class="cap">Master icon<span>1024² · opaque · iOS + Android</span></div></div>
+      <div class="card"><div class="tile checker"><img src="android/ic_launcher_foreground.png" alt="" /></div><div class="cap">Adaptive foreground<span>transparent · 25% safe padding</span></div></div>
+      <div class="card"><div class="tile sq"><img src="android/ic_launcher_background.png" alt="" /></div><div class="cap">Adaptive background<span>emerald gradient</span></div></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h">Splash / launch screen</div>
+    <div class="grid">
+      <div class="card"><div class="tile paper"><img src="splash/splash_logo_light.png" alt="" /></div><div class="cap">Light splash<span>paper #FAF8F3</span></div></div>
+      <div class="card"><div class="tile dark"><img src="splash/splash_logo_dark.png" alt="" /></div><div class="cap">Dark splash<span>ink #15211B</span></div></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h">In-app mark</div>
+    <div class="grid">
+      <div class="card">
+        <div class="bar">
+          <img class="logo" src="svg/pricecheck-mark.svg" alt="" />
+          <span class="word">PriceCheck</span>
+        </div>
+        <div class="cap">Top-bar lockup<span>pricecheck-mark.svg + wordmark</span></div>
+      </div>
+      <div class="card"><div class="tile dark" style="border-radius:20px"><img style="width:52%;height:52%" src="svg/pricecheck-glyph-mono.svg" alt="" /></div><div class="cap">Mono glyph<span>currentColor · any container</span></div></div>
+      <div class="card"><div class="tile paper"><img style="width:74%;height:74%" src="svg/product-placeholder.svg" alt="" /></div><div class="cap">Product placeholder<span>result_screen.dart</span></div></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h">Palette</div>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#1f7a52"></div><div class="lab"><b>Emerald</b>#1f7a52</div></div>
+      <div class="sw"><div class="chip" style="background:linear-gradient(#2a9065,#176343)"></div><div class="lab"><b>Mark gradient</b>#2a9065 → #176343</div></div>
+      <div class="sw"><div class="chip" style="background:#FAF8F3"></div><div class="lab"><b>Paper</b>#FAF8F3</div></div>
+      <div class="sw"><div class="chip" style="background:#15211B"></div><div class="lab"><b>Ink</b>#15211B</div></div>
+    </div>
+    <p class="note">Fonts (Schibsted Grotesk + IBM Plex Mono) must be bundled as .ttf for offline use — see README §4.</p>
+  </section>
+</div>
+</body>
+</html>

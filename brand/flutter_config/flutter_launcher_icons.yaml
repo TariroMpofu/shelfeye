@@ -1,0 +1,23 @@
+# =====================================================================
+#  PriceCheck — Launcher icon config
+#  Run:  flutter pub run flutter_launcher_icons
+#  (add `flutter_launcher_icons` to dev_dependencies first)
+# =====================================================================
+flutter_launcher_icons:
+  image_path: "assets/brand/appicon/appicon_master_1024.png"
+
+  # iOS — generates ios/Runner/Assets.xcassets/AppIcon.appiconset
+  ios: true
+  remove_alpha_ios: true            # App Store rejects alpha; master is opaque
+
+  # Android — legacy + adaptive (API 26+)
+  android: "ic_launcher"            # writes mipmap-*/ic_launcher.png
+  min_sdk_android: 21
+  adaptive_icon_background: "assets/brand/android/ic_launcher_background.png"
+  adaptive_icon_foreground: "assets/brand/android/ic_launcher_foreground.png"
+  # (Or use a flat colour instead of the bg image:)
+  # adaptive_icon_background: "#1B7049"
+
+  # Optional extra platforms if this kiosk ever ships there:
+  # web: true
+  # windows: { generate: true, icon_size: 256 }
