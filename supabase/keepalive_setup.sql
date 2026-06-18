@@ -13,7 +13,11 @@ values (1, now())
 on conflict (id) do nothing;
 
 -- RLS on, with a narrow policy: anon may only UPDATE the existing row.
+-- NOTE: the policy alone is not enough — the anon role also needs the
+-- table-level GRANT, or PostgREST updates 0 rows and the Action logs "[]".
 alter table public.keepalive enable row level security;
+
+grant update, select on public.keepalive to anon;
 
 drop policy if exists keepalive_anon_update on public.keepalive;
 create policy keepalive_anon_update
@@ -22,3 +26,10 @@ create policy keepalive_anon_update
   to anon
   using (id = 1)
   with check (id = 1);
+
+drop policy if exists keepalive_anon_select on public.keepalive;
+create policy keepalive_anon_select
+  on public.keepalive
+  for select
+  to anon
+  using (id = 1);
