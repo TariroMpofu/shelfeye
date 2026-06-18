@@ -1,0 +1,22 @@
+name: ShelfEye KeepAlive
+
+# Free Supabase projects pause after 7 days of inactivity. This pings the
+# project every 5 days so it stays awake. Uses repo secrets SUPABASE_URL and
+# SUPABASE_ANON_KEY (the anon key is safe to store; RLS protects the tables).
+on:
+  schedule:
+    - cron: '0 0 */5 * *'
+  workflow_dispatch:
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update keepalive timestamp
+        run: |
+          curl -X PATCH "${{ secrets.SUPABASE_URL }}/rest/v1/keepalive?id=eq.1" \
+          -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+          -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+          -H "Content-Type: application/json" \
+          -H "Prefer: return=representation" \
+          -d '{"last_ping":"'"$(date -u +"%Y-%m-%dT%H:%M:%SZ")"'"}'
