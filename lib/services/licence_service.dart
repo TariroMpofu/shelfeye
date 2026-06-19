@@ -83,6 +83,11 @@ class LicenceService extends ChangeNotifier {
         lastVerifiedAt: DateTime.now(),
         storeId: storeId,
       );
+      debugPrint(
+        'LicenceService: store=$storeId allowed=${r.allowed} '
+        'reason=${r.reason} validUntil=${r.validUntil} '
+        'serverReachable=$_serverReachable → tier=$tier',
+      );
       await _persist();
       notifyListeners();
     } catch (e) {

@@ -48,8 +48,25 @@ String logBody(String s) {
   return t;
 }
 
-/// Detects iVend's database-failure payload (SQL Server down → HTTP 400 with a
-/// CXSDataException whose Message is developer NHibernate text).
+/// Detects an iVend database-layer failure and classifies it. iVend wraps DB
+/// problems as a CXSDataException / GenericADOException / SqlException, and — when
+/// the API's IntegrationService fails to initialise on startup — a
+/// TypeInitializationException. Those wrappers share the same vocabulary, so the
+/// underlying SqlException text is read to tell three distinct causes apart:
+///
+///  • Schema / patch mismatch — "Invalid column name" / "Invalid object name".
+///    SQL Server is up and actively rejected the query because the installed iVend
+///    build is ahead of the database (a pending DB patch/upgrade). It arrives as a
+///    TypeInitializationException because LoadSystemContext runs the failing Store
+///    query during IntegrationService startup, taking the whole API down. The old
+///    coarse rule mislabelled this as "SQL Server is not running" — the service is
+///    actually fine.
+///  • SQL Server unreachable — genuine connectivity ("could not open a connection",
+///    "network-related or instance-specific", "server was not found").
+///  • Anything else DB-related → a generic database error.
+///
+/// Returns null when the body isn't a DB failure (e.g. a CXSBusinessException auth
+/// error) so messages like "User Or Password is incorrect." pass through verbatim.
 String? _detectDatabaseFailure(String body) {
   final t = body.trim();
   if (!t.startsWith('{')) return null;
@@ -58,14 +75,38 @@ String? _detectDatabaseFailure(String body) {
     if (d is! Map<String, dynamic>) return null;
     final type = d['ExceptionType']?.toString() ?? '';
     final desc = d['Description']?.toString() ?? '';
-    if (type.contains('CXSDataException') ||
+
+    final looksLikeDbFailure = type.contains('CXSDataException') ||
+        type.contains('TypeInitializationException') ||
+        desc.contains('CXSDataException') ||
         desc.contains('SqlException') ||
-        desc.contains('SQL Server') ||
-        desc.contains('GenericADOException')) {
+        desc.contains('GenericADOException') ||
+        desc.contains('TypeInitializationException') ||
+        desc.contains('SQL Server');
+    if (!looksLikeDbFailure) return null;
+
+    // Schema / patch mismatch: a column or table the installed build expects is
+    // missing from the database.
+    if (desc.contains('Invalid column name') ||
+        desc.contains('Invalid object name')) {
+      return 'iVend database is out of date for the installed iVend version '
+          '(a required column or table is missing). A pending iVend database '
+          'patch/upgrade must be applied on the server before the app can be '
+          'used. Contact your administrator.';
+    }
+
+    // Genuine connectivity failure — the server/instance could not be reached.
+    if (desc.contains('could not open a connection') ||
+        desc.contains('network-related or instance-specific') ||
+        desc.contains('server was not found')) {
       return 'iVend server cannot reach its database (SQL Server error). '
           'Check that the SQL Server service is running on the server, '
           'then try again.';
     }
+
+    // Some other database-layer error.
+    return 'iVend reported a database error. Check the iVend API service and '
+        'SQL Server on the server, then the server event logs.';
   } catch (_) {}
   return null;
 }
@@ -108,8 +149,8 @@ String? _extractApiMessage(String body) {
 }
 
 /// Maps a non-2xx response to operator/technician-readable guidance.
-/// Priority: SQL-down → iVend JSON message → IIS page (by substatus) → 503 →
-/// bare status. Ported from StockRoom.
+/// Priority: DB failure (schema mismatch / SQL-down / generic) → iVend JSON
+/// message → IIS page (by substatus) → 503 → bare status. Ported from StockRoom.
 String friendlyHttpMessage(int statusCode, String body) {
   final db = _detectDatabaseFailure(body);
   if (db != null) return db;

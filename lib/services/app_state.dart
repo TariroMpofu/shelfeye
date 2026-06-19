@@ -44,7 +44,11 @@ class AppState extends ChangeNotifier {
   // Connection monitoring (mirrors StockRoom): a periodic health ping plus OS
   // network events, with the last-known state persisted so the ribbon shows
   // green/red immediately on launch.
-  static const _pingInterval = Duration(minutes: 3);
+  // Adaptive polling: relaxed while healthy, aggressive while offline so the
+  // kiosk reconnects fast when the server/VPN comes back (an OS network event
+  // won't fire if Wi-Fi stayed up but iVend was down).
+  static const _pingIntervalOnline = Duration(minutes: 3);
+  static const _pingIntervalOffline = Duration(seconds: 2);
   static const _onlineKey = 'shelfeye_last_online';
   Timer? _pingTimer;
   bool _pingRunning = false;
@@ -302,8 +306,24 @@ class AppState extends ChangeNotifier {
   void _startReachabilityChecks() {
     _pingTimer?.cancel();
     if (!isConfigured) return;
-    pingServer(); // resolve once now
-    _pingTimer = Timer.periodic(_pingInterval, (_) => pingServer());
+    // Resolve once now, then schedule the next check at an interval that adapts
+    // to the outcome (fast while offline, relaxed while healthy).
+    pingServer().then((_) => _scheduleNextPing());
+  }
+
+  /// One-shot timer that reschedules itself after each ping, picking the
+  /// interval from the current reachability so a down server is retried every
+  /// 15s until it returns, then backs off to 3 min once healthy.
+  void _scheduleNextPing() {
+    _pingTimer?.cancel();
+    if (!isConfigured) return;
+    final interval = _reach == Reachability.reachable
+        ? _pingIntervalOnline
+        : _pingIntervalOffline;
+    _pingTimer = Timer(interval, () async {
+      await pingServer();
+      _scheduleNextPing();
+    });
   }
 
   /// OS network events update reachability immediately: on loss → unreachable

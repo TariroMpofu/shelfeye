@@ -291,12 +291,28 @@ class DeviceGate {
           )
           .timeout(const Duration(seconds: 15));
 
+      debugPrint(
+        'DeviceGate: licence check → store=$storeId hw=${device.hardwareId} '
+        'HTTP ${res.statusCode}',
+      );
       if (res.statusCode == 200) {
+        // Log verbatim what Supabase returned before we act on it.
+        debugPrint('DeviceGate: server response = ${res.body}');
         final body = jsonDecode(res.body) as Map<String, dynamic>;
         final allowed = body['allowed'] == true;
         final reason = body['reason'] as String?;
         final validUntilStr = body['valid_until'] as String?;
         final serverHmac = body['hmac'] as String?;
+        // valid_until is a date-only string (YYYY-MM-DD) and means "valid
+        // through the END of that day" — matching the server's expiry test
+        // `valid_until < CURRENT_DATE`. _parseValidUntil rolls a bare date to
+        // the following midnight so the kiosk stays active all day on the
+        // expiry date instead of being paused at 00:00.
+        final validUntil = _parseValidUntil(validUntilStr);
+        debugPrint(
+          'DeviceGate: verdict allowed=$allowed reason=$reason '
+          'valid_until=$validUntilStr (active until $validUntil)',
+        );
 
         if (serverHmac != null) {
           final expected = _hmac(
@@ -326,16 +342,21 @@ class DeviceGate {
         return GateResult(
           allowed: allowed,
           reason: reason,
-          validUntil: validUntilStr != null
-              ? DateTime.tryParse(validUntilStr)
-              : null,
+          validUntil: validUntil,
         );
       }
-      debugPrint('DeviceGate: HTTP ${res.statusCode} — trying cache');
+      debugPrint(
+        'DeviceGate: HTTP ${res.statusCode} body=${res.body} — trying cache',
+      );
     } catch (e) {
       debugPrint('DeviceGate: server unreachable — $e');
     }
-    return _offlineCache(storeId, device?.hardwareId ?? '');
+    final cached = await _offlineCache(storeId, device?.hardwareId ?? '');
+    debugPrint(
+      'DeviceGate: offline fallback → allowed=${cached.allowed} '
+      'reason=${cached.reason} valid_until=${cached.validUntil}',
+    );
+    return cached;
   }
 
   // ── offline cache ──────────────────────────────────────────────────────────
@@ -400,9 +421,7 @@ class DeviceGate {
       return GateResult(
         allowed: true,
         reason: 'offline_cached',
-        validUntil: validUntilStr != null
-            ? DateTime.tryParse(validUntilStr)
-            : null,
+        validUntil: _parseValidUntil(validUntilStr), // date-only = end of day
       );
     } catch (_) {
       return const GateResult(allowed: false, reason: 'offline_no_cache');
